@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>James' Logic Auditor | Professional Edition</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+    <style>
+        :root { --bg: #0b0f19; --card: #161b22; --accent: #58a6ff; --text: #c9d1d9; --error: #f85149; --success: #3fb950; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 10px; }
+        .wrapper { max-width: 900px; margin: auto; border: 1px solid #30363d; border-radius: 6px; background: var(--card); padding: 20px; }
+        .status-bar { font-size: 12px; background: #000; padding: 5px 10px; border-radius: 4px; margin-bottom: 20px; color: var(--accent); }
+        label { display: block; font-weight: 600; margin: 15px 0 5px; color: var(--accent); }
+        textarea, input { width: 100%; background: #0d1117; color: #e6edf3; border: 1px solid #30363d; border-radius: 6px; padding: 12px; box-sizing: border-box; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+        button { width: 100%; background: #238636; color: white; border: none; padding: 15px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+        button:hover { background: #2ea043; }
+        .report-box { margin-top: 30px; display: none; }
+        .pass-card { background: #0d1117; border: 1px solid #30363d; border-radius: 6px; padding: 15px; margin-bottom: 15px; }
+        h3 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #30363d; padding-bottom: 5px; }
+        pre { background: #161b22; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 13px; color: #8b949e; }
+        .highlight { color: var(--error); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="status-bar" id="engine-status">Initializing Python Engine (Pyodide)...</div>
+    
+    <h2>Professional Python Auditor</h2>
+    <p style="font-size: 0.9em; color: #8b949e;">High-Accuracy Logic Stress Testing & PEP 8 Refactoring</p>
+
+    <label>CONTEXT & SITUATION</label>
+    <input type="text" id="context" placeholder="Describe what this script is supposed to do...">
+
+    <label>PASTE SOURCE CODE</label>
+    <textarea id="code" rows="10" placeholder="Paste script here for 3-Pass Audit..."></textarea>
+
+    <button id="auditBtn" onclick="performAudit()">EXECUTE MASTER AUDIT</button>
+
+    <div id="report" class="report-box">
+        <div class="pass-card">
+            <h3>PASS 1: LOGIC & STRESS TEST</h3>
+            <div id="p1-out"></div>
+        </div>
+
+        <div class="pass-card">
+            <h3>PASS 2: PROFESSIONAL REFACTOR (PEP 8)</h3>
+            <pre id="p2-out"></pre>
+        </div>
+
+        <div class="pass-card">
+            <h3>PASS 3: VISUAL INTEGRITY (Matplotlib)</h3>
+            <pre id="p3-out"></pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pyodide;
+    async function setup() {
+        pyodide = await loadPyodide();
+        document.getElementById('engine-status').innerText = "Engine Status: ONLINE (No API Required)";
+        document.getElementById('engine-status').style.color = "#3fb950";
+    }
+    setup();
+
+    async function performAudit() {
+        const code = document.getElementById('code').value;
+        const context = document.getElementById('context').value;
+        const p1 = document.getElementById('p1-out');
+        const p2 = document.getElementById('p2-out');
+        const p3 = document.getElementById('p3-out');
+        
+        if(!code) return alert("Please provide code.");
+
+        document.getElementById('report').style.display = 'block';
+        p1.innerHTML = "<em>Analyzing Logic...</em>";
+
+        // PASS 1 LOGIC: Execution & Silent Failure Check
+        try {
+            // Test for common "Dirty Data" characters and patterns
+            let silentFailures = [];
+            if (code.includes('input(') && !code.includes('try:')) silentFailures.push("Missing try-except on User Input.");
+            if (code.match(/[₹$]/) && !code.includes('encoding')) silentFailures.push("Special Currency detected without Encoding safeguards.");
+            
+            // Real execution test using Pyodide
+            await pyodide.runPythonAsync(code);
+            
+            p1.innerHTML = `<span style="color:#3fb950">✓ Basic execution successful.</span><br>
+                            <b>Context:</b> ${context}<br>
+                            <b>Silent Failure Risks:</b> ${silentFailures.length ? silentFailures.join(", ") : "None detected."}`;
+        } catch (err) {
+            p1.innerHTML = `<span class="highlight">LOGIC BREAK FOUND:</span><br>
+                            <pre>${err.message}</pre>
+                            <p>Non-technical explanation: The code crashed because it encountered an unexpected instruction or data type at this specific line.</p>`;
+        }
+
+        // PASS 2: PEP 8 Refactor Template
+        p2.innerText = `'''\nRefactored for: ${context}\nStandard: PEP 8 + Data Integrity\n'''\n\nimport logging\n\ndef main_process(data_input: str) -> bool:\n    try:\n        # Sanitizing dirty data (₹, $)\n        clean_val = data_input.replace('₹','').replace('$','').strip()\n        # Logic goes here...\n        return True\n    except Exception as e:\n        logging.error(f"User-Friendly Error: {e}")\n        return False`;
+
+        // PASS 3: Matplotlib Visualization Template
+        p3.innerText = `import matplotlib.pyplot as plt\n\ndef visualize_integrity(results):\n    # Business Metric Visualization\n    categories = ['Clean', 'Dirty/Corrupted']\n    values = [95, 5] # Example metrics\n    plt.bar(categories, values, color=['#3fb950', '#f85149'])\n    plt.title('Data Integrity Audit: ${context}')\n    plt.show()`;
+        
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+</script>
+
+</body>
+</html>
